@@ -1,0 +1,29 @@
+@import "tailwindcss";
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: #0b0f14;
+  color: #ffffff;
+  font-family:
+    ui-sans-system,
+    system-ui,
+    -apple-system,
+    "Segoe UI",
+    Roboto,
+    Helvetica,
+    Arial,
+    sans-serif;
+}
+
+/* Letters must be inline-block so GSAP transforms apply to each one. */
+.hero-letter {
+  display: inline-block;
+}
+
+::selection {
+  background: #d4ff3f;
+  color: #0b0f14;
+}
