@@ -12,8 +12,8 @@ const WORDS = ["WELCOME", "ITZFIZZ"];
 const METRICS = [
   { value: 58, suffix: "%", label: "Increase in pick-up point use" },
   { value: 23, suffix: "%", label: "Decrease in customer phone calls" },
-  { value: 27, suffix: "%", label: "Increase in pick-up point use" },
-  { value: 40, suffix: "%", label: "Decrease in customer phone calls" },
+  { value: 27, suffix: "%", label: "Increase in landing-page conversions" },
+  { value: 40, suffix: "%", label: "Growth in repeat bookings" },
 ];
 
 export default function Hero() {
@@ -42,10 +42,22 @@ export default function Hero() {
         .from(".hero-cue", { opacity: 0, duration: 0.6 }, "-=0.4");
 
       // ---- 2. Scroll-driven animation: pinned hero, scrubbed progress ----
+      // This timeline is built ONLY after the intro finishes (see the
+      // onComplete hook at the end). The intro and this scrub timeline
+      // animate the same properties on the headline, tagline, and cue; if
+      // this timeline were created while the intro was still playing, its
+      // tweens would capture the intro's transient mid-flight values as
+      // their start state, so scrolling back to progress 0 would render
+      // those captured values instead of the loaded state. Deferring
+      // creation until the intro has finished removes the overlap, and the
+      // headline/tagline/cue tweens below use fromTo with explicit natural
+      // start values, so progress 0 always renders the initial loaded state.
       // scrub: 1 smooths the mapping from scroll position to animation
       // progress, which is what gives the visible easing on scroll.
       // Every animated property below is a transform or opacity — no
       // layout-affecting properties (no width/height/top/letter-spacing).
+      const buildScroll = () => {
+      ctx.add(() => {
       const tl = gsap.timeline({
         scrollTrigger: {
           trigger: rootRef.current,
@@ -76,8 +88,9 @@ export default function Hero() {
         .to(".blob-a", { yPercent: -30, duration: 1, ease: "none" }, 0)
         .to(".blob-b", { yPercent: 30, duration: 1, ease: "none" }, 0)
         // Headline letters fan outward from the centre and fade as you scroll.
-        .to(
+        .fromTo(
           ".hero-letter",
+          { x: 0, y: 0, opacity: 1 },
           {
             x: (i) => (i - center) * 16,
             y: -70,
@@ -87,8 +100,8 @@ export default function Hero() {
           },
           0.1,
         )
-        .to(".hero-tagline", { y: -30, opacity: 0, duration: 0.5 }, 0.15)
-        .to(".hero-cue", { opacity: 0, duration: 0.3 }, 0)
+        .fromTo(".hero-tagline", { y: 0, opacity: 1 }, { y: -30, opacity: 0, duration: 0.5 }, 0.15)
+        .fromTo(".hero-cue", { opacity: 1 }, { opacity: 0, duration: 0.3 }, 0)
         // Metric cards rise in with a stagger, tied to scroll progress.
         .from(".metric-card", { y: 60, opacity: 0, duration: 0.5, stagger: 0.08 }, 0.35);
 
@@ -109,6 +122,9 @@ export default function Hero() {
           0.4 + i * 0.05,
         );
       });
+      });
+      };
+      intro.eventCallback("onComplete", buildScroll);
     }, rootRef);
 
     return () => ctx.revert();

@@ -57,6 +57,11 @@ as-is on any static host (Netlify, Vercel, GitHub Pages, etc.).
   number counts up (58%, 23%, 27%, 40%) driven by the same scroll progress,
   so scrubbing back down reverses the count.
 - **Scroll cue** — the "Scroll to drive" hint fades out early in the scroll.
+- **Scroll-back** — returning to the top restores the hero exactly to its
+  loaded state (full headline, eyebrow, subtitle, scroll cue). The scrub
+  timeline is built only after the load animation finishes, and its
+  headline/tagline/cue tweens use explicit start values, so scroll
+  progress 0 always renders the initial state.
 
 **After the hero:** the pin releases into a short "Beyond the hero" services
 section, so the exit transition is visible. Scrolling back up replays the
